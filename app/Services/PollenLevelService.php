@@ -53,8 +53,8 @@
         {
             return match($this->data['level'] ?? 0) {
                 0, 1 => 'text-green-600',
-                2 => 'text-yellow-600',
-                3 => 'text-orange-600',
+                2,3 => 'text-yellow-600',
+                4,5 => 'text-orange-600',
                 default => 'text-red-600'
             };
         }
