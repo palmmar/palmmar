@@ -13,7 +13,7 @@ class UserController extends Controller
         private PollenService $pollenService
     ) {}
 
-    public function index()
+    public function index(): View
     {
         $per_page = (int)request('per_page', 25);
         $per_page = in_array($per_page, [10, 25, 50, 100]) ? $per_page : 25;
@@ -43,12 +43,12 @@ class UserController extends Controller
         return view('users.index', ['users' => $users]);
     }
 
-    public function create(): \Illuminate\View\View
+    public function create(): View
     {
         return view('users.create');
     }
 
-    public function store(): \Illuminate\Http\RedirectResponse
+    public function store(): RedirectResponse
     {
         $validated = request()->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -74,13 +74,15 @@ class UserController extends Controller
 
     public function show(User $user): View
     {
-        $pollenData = $this->pollenService->getPollenData($user->city);
+        $city = $user->city ?? "";
+        $pollenData = $this->pollenService->getPollenData($city);
 
         return view('users.show', [
             'user' => $user,
             'pollenData' => $pollenData,
         ]);
     }
+
     public function edit(User $user): View
     {
         return view('users.edit', compact('user'));

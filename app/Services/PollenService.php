@@ -14,7 +14,7 @@ class PollenService
      * @param string $zipcode
      * @return array
      */
-    public function getPollenData(string $city): array
+    public function getPollenData(string $city = ""): array
     {
         $cacheKey = "pollen_data_{$city}";
 
