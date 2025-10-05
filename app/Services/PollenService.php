@@ -32,30 +32,29 @@ class PollenService
         $url = $item['forecasts'] ?? null;
 
         $response = http::get($url)->json();
+        $pollen_types = $response['items'] ?? [];
 
-        return Cache::remember($cacheKey, 3600, function () use ($item) {
+        return Cache::remember($cacheKey, 120, function () use ($pollen_types)
+        {
+            $pollen_data = [];
+            foreach ($pollen_types as $type)
+            {
+                $pollen_level = new PollenLevelService($type);
+                if ($pollen_level->endOfSeason()){
+                    return $pollen_level->getEndOfSeasonData();
+                }
 
-            try {
-                // Replace with your actual API endpoint and credentials
-                // $response = Http::get('https://api.example.com/pollen', [
-                //     'city' => $city,
-                //     'zipcode' => $zipcode,
-                //     'api_key' => config('services.pollen.api_key'),
-                // ]);
-
-                // if ($response->successful()) {
-                //     return $response->json();
-                // }
-
-                // For now, return mock data until you implement the real API
-                return $this->getMockPollenData();
-
-            } catch (\Exception $e) {
-                // Log the error and return default data
-                logger()->error('Pollen API Error: ' . $e->getMessage());
-                return $this->getDefaultPollenData();
+                $pollen_data['types'][] = [
+                    'name' => $pollen_level->getName(),
+                    'level' => $pollen_level->getLevel(),
+                    'value' => $pollen_level->getValue(),
+                    'color' => $pollen_level->getColor(),
+                ];
             }
+
+            return $pollen_data;
         });
+
     }
 
     private function getPollenRegions(): array
