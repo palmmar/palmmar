@@ -56,24 +56,20 @@
          * Bygg en komplett Laravel-DB-connection-array för tenanten.
          * Används i middleware/jobb för att växla anslutning.
          */
-        public function databaseConfig(array $overrides = []): array
+        public function databaseConfig(): array
         {
-            $host = $this->db_host ?: config('database.connections.tenant.host', env('TENANT_DB_HOST', '127.0.0.1'));
-            $port = $this->db_port ?: config('database.connections.tenant.port', (int) env('TENANT_DB_PORT', 3306));
-
-            $config = [
+            return [
                 'driver'   => 'mysql',
-                'host'     => $host,
-                'port'     => $port,
-                'database' => $this->db_name,
-                'username' => $this->db_user,
-                'password' => $this->db_pass,
+                'host'     => $this->db_host ?: env('TENANT_DB_HOST', '127.0.0.1'),
+                'port'     => (int)($this->db_port ?: env('TENANT_DB_PORT', 3306)),
+                'database' => $this->db_name,          // saas_acme
+                'username' => $this->db_user,          // root (just nu)
+                'password' => $this->db_pass ?? '',    // viktigt: '' om null
                 'charset'  => 'utf8mb4',
                 'collation'=> 'utf8mb4_unicode_ci',
+                'prefix'   => '',
                 'strict'   => true,
             ];
-
-            return array_replace($config, $overrides);
         }
 
         /**
