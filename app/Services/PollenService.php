@@ -34,7 +34,7 @@ class PollenService
         $response = http::get($url)->json();
         $pollen_types = $response['items'] ?? [];
 
-        return Cache::remember($cacheKey, 120, function () use ($pollen_types)
+        return Cache::remember($cacheKey, 3600, function () use ($pollen_types)
         {
             $pollen_data = [];
             foreach ($pollen_types as $type)
