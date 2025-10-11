@@ -5,25 +5,42 @@
     use Illuminate\Support\Facades\Schema;
 
     return new class extends Migration {
-        // Kör denna migration mot landlord-anslutningen
-        protected $connection = 'landlord';
+        protected $connection = 'landlord'; // viktigt!
 
         public function up(): void
         {
-            Schema::connection($this->connection)->table('tenants', function (Blueprint $table) {
-                // valfria, men bra att ha
-                $table->string('db_host')->nullable();
-                $table->unsignedSmallInteger('db_port')->nullable();
-                $table->string('domain')->nullable();
-                $table->string('plan')->nullable();
-                $table->boolean('is_active')->default(true);
-            });
+            if (Schema::connection($this->connection)->hasTable('tenants')) {
+                Schema::connection($this->connection)->table('tenants', function (Blueprint $table) {
+                    if (!Schema::connection($this->connection)->hasColumn('tenants', 'db_host')) {
+                        $table->string('db_host')->nullable();
+                    }
+                    if (!Schema::connection($this->connection)->hasColumn('tenants', 'db_port')) {
+                        $table->string('db_port')->nullable();
+                    }
+                    if (!Schema::connection($this->connection)->hasColumn('tenants', 'domain')) {
+                        $table->string('domain')->nullable();
+                    }
+                    if (!Schema::connection($this->connection)->hasColumn('tenants', 'plan')) {
+                        $table->string('plan')->nullable();
+                    }
+                    if (!Schema::connection($this->connection)->hasColumn('tenants', 'is_active')) {
+                        $table->boolean('is_active')->default(true);
+                    }
+                });
+            }
         }
 
         public function down(): void
         {
-            Schema::connection($this->connection)->table('tenants', function (Blueprint $table) {
-                $table->dropColumn(['db_host', 'db_port', 'domain', 'plan', 'is_active']);
-            });
+            if (Schema::connection($this->connection)->hasTable('tenants')) {
+                Schema::connection($this->connection)->table('tenants', function (Blueprint $table) {
+                    foreach (['db_host','db_port','domain','plan','is_active'] as $col) {
+                        if (Schema::connection($this->connection)->hasColumn('tenants', $col)) {
+                            $table->dropColumn($col);
+                        }
+                    }
+                });
+            }
         }
     };
+

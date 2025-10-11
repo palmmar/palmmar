@@ -19,6 +19,11 @@
             $parts = explode('.', $host);
             $subdomain = $parts[0] ?? null;
 
+            // BYPASS för landlord-panelen (allt under /landlord)
+            if ($request->is('landlord*')) {
+                return $next($request);
+            }
+
             // Dev-fallback: tillåt ?tenant=acme
             if (!$subdomain || in_array($subdomain, ['www','local','localhost'])) {
                 $subdomain = $request->query('tenant', $subdomain);
