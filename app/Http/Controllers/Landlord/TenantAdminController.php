@@ -6,21 +6,24 @@
     use App\Models\Tenant;
     use App\Services\TenantProvisioner;
     use Illuminate\Http\Request;
+    use Illuminate\Contracts\View\Factory;
+    use Illuminate\Contracts\View\View;
+    use Illuminate\Http\RedirectResponse;
 
     class TenantAdminController extends Controller
     {
-        public function index()
+        public function index(): Factory|View
         {
             $tenants = Tenant::query()->orderBy('id')->get();
             return view('landlord.tenants.index', compact('tenants'));
         }
 
-        public function create()
+        public function create(): Factory|View
         {
             return view('landlord.tenants.create');
         }
 
-        public function store(Request $request)
+        public function store(Request $request): RedirectResponse
         {
             $data = $request->validate([
                 'id'       => ['required','alpha_dash','max:50','unique:tenants,id'],
@@ -54,7 +57,7 @@
                 ->with('success', "Tenant {$tenant->id} skapad och provisionerad.");
         }
 
-        public function provision(Tenant $tenant)
+        public function provision(Tenant $tenant): RedirectResponse
         {
             TenantProvisioner::make()->provision($tenant, [
                 'create_database' => true,

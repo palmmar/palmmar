@@ -31,8 +31,8 @@
             Log::info('LOGIN_ATTEMPT', ['ok' => $ok, 'email' => $credentials['email']]);
 
             if ($ok) {
-                $request->session()->regenerate();                // viktigt!
-                $request->session()->put('just_logged_in', now()); // debugmarkör
+                $request->session()->regenerate();
+
                 // Redirecta till root på samma host (undvik fel domän)
                 return redirect()->intended('/')->with('success', 'Welcome back!');
             }
