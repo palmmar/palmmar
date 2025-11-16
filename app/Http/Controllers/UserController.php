@@ -115,4 +115,24 @@ class UserController extends Controller
             ->with('success', 'User updated successfully.');
     }
 
+    public function getUsers(): array
+    {
+        return [
+            0 => [
+                'id' => 1,
+                'name' => 'Alice'
+            ]
+        ];
+    }
+
+    public function getUser(int $user_id )
+    {
+
+    }
+
+    public function storeUser()
+    {
+
+    }
+
 }

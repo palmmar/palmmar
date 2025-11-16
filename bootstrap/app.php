@@ -17,9 +17,16 @@
                 'tenant' => \App\Http\Middleware\IdentifyTenant::class,
             ]);
 
+
             // Viktigt: se till att IdentifyTenant körs FÖRE auth/session i web-stacken
             $middleware->prependToGroup('web', \App\Http\Middleware\IdentifyTenant::class);
         })
+        ->withMiddleware(function (Middleware $middleware) {
+            $middleware->alias([
+                'internal.api' => InternalApiMiddleware::class,
+            ]);
+        })
+
         ->withExceptions(function (Exceptions $exceptions) {
             // Lämna tomt eller lägg ev. egna renderare/loggning här.
             // Viktigt att detta block FINNS så exception-hanteringen wire:as korrekt.

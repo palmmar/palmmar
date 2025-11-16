@@ -1,6 +1,15 @@
 <?php
 
-    use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Middleware\InternalApiMiddleware;
+use Illuminate\Support\Facades\Route;
 
-    // Tom/stub så "require routes/api.php" inte kraschar.
-    Route::get('/ping', fn () => response()->json(['pong' => true]));
+Route::get('/ping', fn () => response()->json(['pong' => true]));
+
+Route::prefix('internal')
+    ->middleware(InternalApiMiddleware::class)   // <-- viktigt
+    ->group(function () {
+        Route::get('/users', [UserController::class, 'getUsers']);
+        Route::get('/users/{user_id}', [UserController::class, 'getUser']);
+        Route::post('/users', [UserController::class, 'storeUser']);
+    });
